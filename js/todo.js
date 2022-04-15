@@ -9,6 +9,7 @@ let todoArray = []
 function removeTodoFromList(event){
     const li = event.target.parentElement;
     li.remove();
+    // item을 하나하나 대입해서 true 인 것만 모아서 배열을 새로 만듦.
     todoArray = todoArray.filter(item => item.id !== Number(li.id))
     saveTodo();
 }
@@ -42,6 +43,7 @@ function getTodo(event){
     const todoObj = {
         text : todoValue,
         id : Date.now()
+        //삭제기능 추가를 위해 id값 부여
     }
     todoArray.push(todoObj);
     showTodo(todoObj);
