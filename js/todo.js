@@ -4,75 +4,61 @@ const todoList = document.querySelector("#todoList");
 const ul = document.querySelector("ul");
 const test = document.querySelector("#test");
 
-const todoArray = []
+let todoArray = []
 
 function removeTodoFromList(event){
     const li = event.target.parentElement;
     li.remove();
-    const todoContent = event.target.parentElement.firstChild.innerText;
-    localStorage.removeItem(todoContent);
+    todoArray = todoArray.filter(item => item.id !== Number(li.id))
+    saveTodo();
 }
 
 function showTodo(newTodo){
     const addElement = document.createElement("li");
+    addElement.id = newTodo.id;
+
     const span = document.createElement("span");
-    span.innerHTML = newTodo;
+    span.innerHTML = newTodo.text;
+    
     const button = document.createElement("button");
     button.innerHTML = "delete";
-
+    
     button.addEventListener("click", removeTodoFromList);
 
     addElement.appendChild(span);
     addElement.appendChild(button);
-    ul.appendChild(addElement);
-
-    todoArray.push(newTodo);
-
-    saveTodoList();
-
-    function saveTodoList(){
-        localStorage.setItem(localStorage.length, newTodo);
-    }
-
-   
-
-    /*function removeTodo(){
-        addElement.remove();
-        localStorage.removeItem(newTodo);
-    }*/
+    ul.appendChild(addElement);   
 }
 
-function removeTodoFromstroage(num){
-    localStorage.removeItem(num);
+function saveTodo(){
+    localStorage.setItem("newTodo", JSON.stringify(todoArray));
 }
 
-function paintingTodo2(){
-    const addElement = document.createElement("li");
-    const span = document.createElement("span");
-    const button = document.createElement("button");
-    button.innerHTML = "delete";
-
-    for (let i = 1; i <= localStorage.length-1; i++) {
-        const todos = localStorage.getItem(`${i}`)    
-        span.innerHTML = todos;
-        addElement.appendChild(span);
-        addElement.appendChild(button);
-        ul.appendChild(addElement);
-        //button.addEventListener("click", removeTodoFromstroage(`${i}`));
-
-    }
-
-}
-paintingTodo2();
 
 function getTodo(event){
+    event.preventDefault();
     const todoValue = todoInput.value;
     todoInput.value = "";
-    showTodo(todoValue);
-    //event.preventDefault();
-
+    const todoObj = {
+        text : todoValue,
+        id : Date.now()
+    }
+    todoArray.push(todoObj);
+    showTodo(todoObj);
+    saveTodo();
 }
 
-
+console.log(todoArray);
 
 todo.addEventListener("submit", getTodo);
+
+const savedTodos = localStorage.getItem("newTodo");
+
+
+if(savedTodos !== null) {
+    const parsedTodos = JSON.parse(savedTodos);
+    todoArray = parsedTodos;
+    parsedTodos.forEach((element) => {
+        showTodo(element);
+    });
+}
